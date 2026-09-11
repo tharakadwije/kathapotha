@@ -76,8 +76,11 @@ h1, h2, h3 { font-family: var(--display); font-weight: 800; line-height: 1.05; m
 .btn.quiet { background: var(--paper); color: var(--ink); box-shadow: 0 4px 0 rgba(62,46,34,.35); }
 
 /* ---------- hero + shelf ---------- */
-.hero { width: var(--page); margin: 0 auto; padding: clamp(18px, 4vw, 48px) 0 0; display: grid; gap: 18px; }
+.hero { width: 100%; margin: 0 auto; padding: clamp(18px, 4vw, 48px) 0 0; display: grid; gap: 18px; }
 .hero h1 { font-size: clamp(3rem, 9vw, 6.6rem); letter-spacing: -.01em; line-height: .92; }
+
+.hero-card { background: var(--paper); color: var(--ink); border-radius: 18px; padding: clamp(20px, 4vw, 44px); box-shadow: 0 12px 22px -12px rgba(40,22,8,.45); text-align: center; }
+.hero-card .lede { margin: 12px auto 0; }
 .hero .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; }
 
 .shelf { width: var(--page); margin: clamp(28px, 5vw, 56px) auto 0; }

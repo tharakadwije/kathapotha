@@ -83,9 +83,11 @@
 
     main.innerHTML = `
       <section class="hero">
-        <h1>${esc(L.site.name)}</h1>
-        <p class="lede">${esc(L.site.tagline)}</p>
-        ${newest ? `<div class="actions"><a class="btn" href="${esc(url(newest.path))}">${openIcon}Read the newest story</a></div>` : ''}
+        <div class="hero-card wrap">
+          <h1>${esc(L.site.name)}</h1>
+          <p class="lede">${esc(L.site.tagline)}</p>
+          ${newest ? `<div class="actions"><a class="btn" href="${esc(url(newest.path))}">${openIcon}Read the newest story</a></div>` : ''}
+        </div>
       </section>
 
       <section class="shelf" aria-label="Books on the shelf">

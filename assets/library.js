@@ -25,9 +25,9 @@
 
 window.LIBRARY = {
   site: {
-    name: "The Story Shelf",
-    author: "our young author",   // use a first name or pen name only
-    tagline: "Stories written and imagined by our young author. Pick a book and start reading.",
+    name: "Read Aloud Akie",
+    author: "Akie",   // use a first name or pen name only
+    tagline: "Stories read aloud by Akie — pick a book and enjoy.",
   },
 
   series: [
