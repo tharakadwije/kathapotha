@@ -44,6 +44,8 @@ Images & icons
 
 Microcopy
 - Keep labels brief and friendly (e.g., "Start reading", "Coming soon").
+- Rules and notices (like the copyright "little note") speak to children kindly: say what they *can* do first, ask nicely ("Please don't…"), and end with a thank-you. Never scary, legal or grown-up in tone.
+- Dates read like a book's imprint page: "Published 11 September 2026".
 
 When to create a new pattern
 - If you need a component that recurs in 3+ places, add a documented pattern here and implement re-usable markup in `assets/site.js`.

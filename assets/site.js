@@ -33,9 +33,23 @@
   const visible = L.stories.filter((s) => s.status === 'ready' || s.status === 'soon');
   const seriesById = (id) => L.series.find((s) => s.id === id);
   const inSeries = (id) => visible.filter((s) => s.series === id).sort((a, b) => (a.book || 0) - (b.book || 0));
-  const newestFirst = (list) => list.slice().sort((a, b) => String(b.added || '').localeCompare(String(a.added || '')));
+  const newestFirst = (list) => list.slice().sort((a, b) => String(b.published || '').localeCompare(String(a.published || '')));
   const ready = newestFirst(visible.filter((s) => s.status === 'ready'));
   const fullTitle = (s) => s.subtitle ? `${s.title} ${s.subtitle}` : s.title;
+
+  // "2026-09-11" -> "Published 11 September 2026" (written out by hand so the day never shifts with the time zone).
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  function published(s) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s.published || '');
+    return m ? `Published <time datetime="${m[0]}">${Number(m[3])} ${MONTHS[m[2] - 1]} ${m[1]}</time>` : '';
+  }
+  // © years, from the first to the latest published book, e.g. "2026" or "2026–2028".
+  function copyrightYears() {
+    const years = ready.map((s) => String(s.published || '').slice(0, 4)).filter((y) => /^\d{4}$/.test(y)).sort();
+    const first = years[0] || String(new Date().getFullYear());
+    const last = years[years.length - 1] || first;
+    return first === last ? first : `${first}–${last}`;
+  }
 
   function where(s) {
     const se = seriesById(s.series);
@@ -67,7 +81,8 @@
 
   function tile(s, opts) {
     const status = s.status === 'soon' ? 'Coming soon' : where(s);
-    return `<li class="tile">${cover(s, opts)}<div class="tile-meta"><strong>${esc(s.status === 'soon' && !s.book ? s.title : fullTitle(s))}</strong><span>${esc(status)}</span></div></li>`;
+    const date = s.status === 'ready' ? published(s) : '';
+    return `<li class="tile">${cover(s, opts)}<div class="tile-meta"><strong>${esc(s.status === 'soon' && !s.book ? s.title : fullTitle(s))}</strong><span>${esc(status)}</span>${date ? `<span class="tile-date">${date}</span>` : ''}</div></li>`;
   }
 
   function header() {
@@ -84,7 +99,24 @@
     const el = document.querySelector('[data-site-footer]');
     if (!el) return;
     el.className = 'site-foot';
-    el.innerHTML = `<div class="shelf-plank" aria-hidden="true"></div><p>${esc(L.site.name)}. Every story here was written by ${esc(L.site.author)}.</p>`;
+    el.innerHTML = `<div class="shelf-plank" aria-hidden="true"></div><p>© ${copyrightYears()} ${esc(L.site.name)}. Every story here was written by ${esc(L.site.author)}.</p>`;
+  }
+
+  // The copyright notice on the home page, written for children: kind and cheerful, never scary.
+  function kindNote() {
+    const a = esc(L.site.author);
+    return `<section class="section wrap" aria-labelledby="note-h">
+      <div class="kind-note">
+        <div class="kind-note-icon" aria-hidden="true">💌</div>
+        <div>
+          <h2 id="note-h">A little note from ${a}</h2>
+          <p>Every story and every picture on this shelf was made by ${a}, with lots of love (and a few lucky carrots 🥕).</p>
+          <p>You can read them and listen to them right here, as many times as you like!</p>
+          <p>Please don't copy, print, share or use them anywhere else. These stories love living here on the shelf, so they're always waiting for you when you come back. 🏡</p>
+          <p class="kind-note-thanks">Thank you for being a kind reader! 💛</p>
+          <p class="fine">© ${copyrightYears()} ${a}. All stories and pictures on ${esc(L.site.name)} belong to ${a}.</p>
+        </div>
+      </div></section>`;
   }
 
   function seriesBand(se) {
@@ -122,7 +154,7 @@
         <div class="section-head"><h2 id="newest-h">Newest story</h2></div>
         <article class="feature">${cover(newest, { noNumber: false })}
           <div><h2>${esc(newest.title)}${newest.subtitle ? `<span>${esc(newest.subtitle)}</span>` : ''}</h2>
-          <p class="from">${esc(where(newest))}${newest.chapters ? `, in ${newest.chapters} chapters` : ''}</p>
+          <p class="from">${esc(where(newest))}${newest.chapters ? `, in ${newest.chapters} chapters` : ''}${newest.published ? `<span class="published">${published(newest)}</span>` : ''}</p>
           <p>${esc(newest.blurb)}</p>
           <a class="btn" href="${esc(url(newest.path))}">${openIcon}Start reading</a></div>
         </article></section>` : ''}
@@ -133,7 +165,9 @@
 
       ${standalone.length ? `<section class="section wrap" aria-labelledby="solo-h">
         <div class="section-head"><h2 id="solo-h">Stories on their own</h2><a class="text-link" href="${url('stories/')}">See all stories</a></div>
-        <ul class="tiles">${standalone.map((s) => tile(s)).join('')}</ul></section>` : ''}`;
+        <ul class="tiles">${standalone.map((s) => tile(s)).join('')}</ul></section>` : ''}
+
+      ${kindNote()}`;
   }
 
   function stories() {
@@ -195,6 +229,7 @@
         <li class="book-row">${cover(b)}
           <div><p class="num">${b.book ? 'Book ' + b.book : 'Extra story'}</p>
           <h2>${esc(b.title)}${b.subtitle && b.subtitle !== 'Book ' + b.book ? `<span>${esc(b.subtitle)}</span>` : ''}</h2>
+          ${b.status === 'ready' && b.published ? `<p class="published">${published(b)}</p>` : ''}
           <p>${esc(b.blurb)}</p>
           ${b.status === 'ready' ? `<a class="btn" href="${esc(url(b.path))}">${openIcon}Read book ${b.book || ''}</a>` : `<span class="soon-note">Coming soon</span>`}</div></li>`).join('')}
       </ol></section>

@@ -155,6 +155,7 @@ h1, h2, h3 { font-family: var(--display); font-weight: 800; line-height: 1.05; m
 .feature h2 span { display: block; font-size: .55em; font-weight: 600; margin-top: .3em; line-height: 1.15; }
 .feature p { margin: 0; max-width: 34em; }
 .feature .from { font-family: var(--display); font-weight: 600; color: var(--ink-soft); margin: 14px 0 10px; }
+.feature .from .published { display: block; margin-top: 2px; font-family: var(--body); font-weight: 400; font-size: 1rem; }
 .feature .btn { margin-top: 22px; }
 
 /* ---------- series band ---------- */
@@ -197,9 +198,25 @@ h1, h2, h3 { font-family: var(--display); font-weight: 800; line-height: 1.05; m
 .book-row h2 span { display: block; font-size: .6em; font-weight: 600; margin-top: .25em; line-height: 1.15; }
 .book-row .num { font-family: var(--display); font-weight: 800; color: var(--carrot-deep); margin: 0 0 4px; }
 .book-row p { margin: 10px 0 0; max-width: 36em; }
+.book-row .published { margin-top: 6px; font-size: 1rem; color: var(--ink-soft); }
 .book-row .btn { margin-top: 16px; font-size: 1.05rem; padding: 12px 20px; }
 .soon-note { display: inline-block; margin-top: 14px; font-family: var(--display); font-weight: 600; color: var(--ink-soft); }
 .series-index h1 { font-size: clamp(2.6rem, 7vw, 5rem); padding-top: clamp(18px, 4vw, 40px); }
+
+/* ---------- kind note (copyright notice for children) ---------- */
+.kind-note {
+  position: relative; display: grid; grid-template-columns: auto 1fr; gap: clamp(14px, 3vw, 30px); align-items: start;
+  background: var(--paper); color: var(--ink); border-radius: 18px; padding: clamp(26px, 4vw, 46px);
+}
+.kind-note::before { content: ""; position: absolute; inset: 10px; border: 2.5px dashed var(--wood-light); border-radius: 12px; pointer-events: none; }
+.kind-note-icon {
+  width: clamp(64px, 9vw, 88px); aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center;
+  background: #fbe3cf; border: 3px solid var(--ink); font-size: clamp(32px, 4.6vw, 46px); line-height: 1; transform: rotate(-6deg);
+}
+.kind-note h2 { font-size: clamp(1.7rem, 3.2vw, 2.4rem); color: var(--carrot-deep); }
+.kind-note p { margin: 10px 0 0; max-width: 38em; }
+.kind-note .kind-note-thanks { font-family: var(--display); font-weight: 800; font-size: 1.2rem; }
+.kind-note .fine { margin-top: 16px; font-size: .95rem; color: var(--ink-soft); }
 
 /* ---------- footer ---------- */
 .site-foot { margin-top: clamp(56px, 8vw, 96px); }
@@ -215,6 +232,7 @@ h1, h2, h3 { font-family: var(--display); font-weight: 800; line-height: 1.05; m
   .feature .cover-link { width: min(240px, 70%); }
   .series-hero { grid-template-columns: 1fr; }
   .book-row { grid-template-columns: 104px 1fr; align-items: start; }
+  .kind-note { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
