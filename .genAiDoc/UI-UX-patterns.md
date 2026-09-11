@@ -29,6 +29,11 @@ Series & Story pages
 - Series are shown in rounded panels (`series-band`).
 - Story pages are immersive: large cover to the left and content to the right on wide screens; stack on small screens.
 
+Read aloud
+- Every story page has a "Read this page" pill with a 👧 Girl / 👦 Boy voice picker beside it (see `components.md`).
+- Voices must sound friendly and child-like — never a deep grown-up voice. Girl is the default.
+- Keep the voice names visible next to the emoji at every width; on small screens the header wraps to a second row instead.
+
 Interactions & animation
 - Minimal motion: subtle lifts on hover (`transform: translateY(-10px)`) and tactile button press.
 - Respect `prefers-reduced-motion`.

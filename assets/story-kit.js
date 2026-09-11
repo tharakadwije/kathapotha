@@ -8,6 +8,10 @@
    - Adds a "Story Shelf" button in the top corner, unless the page already has
      an element with data-site-link="home" (it will point that element home instead).
    - StorySite.endButtons() returns buttons for "The End": next book in the series + back to the shelf.
+   - StorySite.url("stories/x/") makes a link from the top of the site that also works when the page
+     is opened straight from disk (file://), where folder links need index.html on the end.
+
+   For the "Read this page" button with the girl / grown-up voices, also add assets/read-aloud.js.
 */
 (function () {
   const L = window.LIBRARY || { site: {}, series: [], stories: [] };
@@ -17,6 +21,15 @@
   const story = L.stories.find((s) => s.id === id);
   const series = story && L.series.find((s) => s.id === story.series);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // Same rule as url() in assets/site.js: opened from disk (file://), a folder link shows a file
+  // listing, so folder links point at the folder's index.html instead.
+  const url = (p) => {
+    const m = String(p || '').match(/^([^?#]*)(.*)$/);
+    let base = root + m[1];
+    if (location.protocol === 'file:' && base.endsWith('/')) base += 'index.html';
+    return base + m[2];
+  };
+  const home = url('');
 
   function nextBook() {
     if (!story || !series || !story.book) return null;
@@ -28,18 +41,19 @@
   const shelfIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg>';
 
   const StorySite = {
-    home: root,
+    home,
+    url,
     story, series,
     next: nextBook,
     endButtons() {
       const n = nextBook();
       let out = '';
       if (n && n.status === 'ready') {
-        out += `<a class="pill site-pill site-next" href="${esc(root + n.path)}">Read book ${n.book}</a>`;
+        out += `<a class="pill site-pill site-next" href="${esc(url(n.path))}">Read book ${n.book}</a>`;
       } else if (n) {
         out += `<p class="site-soon">Book ${n.book} of ${esc(series.title)} is coming soon.</p>`;
       }
-      out += `<a class="pill site-pill" href="${esc(root)}">${shelfIcon}<span>Back to the shelf</span></a>`;
+      out += `<a class="pill site-pill" href="${esc(home)}">${shelfIcon}<span>Back to the shelf</span></a>`;
       return `<div class="site-end">${out}</div>`;
     },
   };
@@ -62,11 +76,11 @@
     document.head.appendChild(style);
     const links = document.querySelectorAll('[data-site-link="home"]');
     if (links.length) {
-      links.forEach((a) => a.setAttribute('href', root));
+      links.forEach((a) => a.setAttribute('href', home));
     } else {
       const a = document.createElement('a');
       a.className = 'site-home-float';
-      a.href = root;
+      a.href = home;
       a.innerHTML = `${shelfIcon}<span>${esc(L.site.name || 'Home')}</span>`;
       document.body.appendChild(a);
     }

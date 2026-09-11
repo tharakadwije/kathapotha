@@ -7,6 +7,7 @@
 <title>Detective Daisy and the Mystery of the Missing Lucky Carrot</title>
 <script src="../../assets/library.js"></script>
 <script src="../../assets/story-kit.js"></script>
+<script src="../../assets/read-aloud.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Grandstander:wght@600;800&display=swap" rel="stylesheet">
@@ -172,7 +173,7 @@ main { flex: 1; display: flex; flex-direction: column; align-items: center; just
   .trail button svg { width: 16px; height: 18px; }
 }
 @media (max-width: 760px) {
-  .bar { width: 92vw; }
+  .bar { width: 92vw; flex-wrap: wrap; row-gap: 8px; }
   .bar-title { font-size: 1rem; }
   main { justify-content: flex-start; padding-bottom: 84px; }
   .book { width: 94vw; aspect-ratio: auto; grid-template-columns: 1fr; border-radius: 12px; }
@@ -215,13 +216,16 @@ main { flex: 1; display: flex; flex-direction: column; align-items: center; just
   </defs></svg>
 <header class="bar">
   <div class="bar-left">
-    <a class="pill shelf-link" data-site-link="home" href="../../"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg><span>Story Shelf</span></a>
+    <a class="pill shelf-link" data-site-link="home" href="../../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg><span>Story Shelf</span></a>
     <span class="bar-title">Detective Daisy</span>
   </div>
-  <button class="pill" id="read" type="button" hidden>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>
-    <span id="read-label">Read this page</span>
-  </button>
+  <div class="read-tools" id="read-tools" hidden>
+    <div class="voice-pick" id="voice-pick"></div>
+    <button class="pill" id="read" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+      <span id="read-label">Read this page</span>
+    </button>
+  </div>
 </header>
 
 <main>
@@ -893,11 +897,20 @@ main { flex: 1; display: flex; flex-direction: column; align-items: center; just
   const prev = document.getElementById('prev');
   const next = document.getElementById('next');
   const count = document.getElementById('count');
-  const readBtn = document.getElementById('read');
-  const readLabel = document.getElementById('read-label');
+  const readTools = document.getElementById('read-tools');
   const KEY = 'detective-daisy-page';
 
   let current = 0;
+  const canRead = !!(window.ReadAloud && ReadAloud.supported);
+  const voice = canRead ? ReadAloud.attach({
+    button: document.getElementById('read'),
+    label: document.getElementById('read-label'),
+    picker: document.getElementById('voice-pick'),
+    getText: () => {
+      const p = pages[current];
+      return p.type === 'story' ? (p.opens ? p.ch + '. ' : '') + p.text.join(' ') : '';
+    },
+  }) : { stop() {} };
   const seen = new Set([0]);
 
   const foot = '<svg viewBox="0 0 24 26" aria-hidden="true"><path d="M12 25 C9 25 8 22 8.6 19 L2.4 7.6 C4.6 8.2 6.8 9 8.4 10.8 L9.4 2.6 C10.8 4.6 11.6 7 12 9.4 C12.4 7 13.2 4.6 14.6 2.6 L15.6 10.8 C17.2 9 19.4 8.2 21.6 7.6 L15.4 19 C16 22 15 25 12 25 Z" fill="currentColor"/></svg>';
@@ -933,15 +946,10 @@ main { flex: 1; display: flex; flex-direction: column; align-items: center; just
       </section>`;
   }
 
-  function stopReading() {
-    try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
-    readLabel.textContent = 'Read this page';
-  }
-
   function go(i, fromLoad) {
     if (i < 0 || i >= total) return;
     const dir = i >= current ? 'turn-next' : 'turn-prev';
-    stopReading();
+    voice.stop();
     current = i;
     seen.add(i);
     book.classList.remove('turn-next', 'turn-prev', 'single');
@@ -955,7 +963,7 @@ main { flex: 1; display: flex; flex-direction: column; align-items: center; just
       b.classList.toggle('seen', seen.has(k));
       if (k === i) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
     });
-    readBtn.hidden = !window.speechSynthesis || pages[i].type !== 'story';
+    readTools.hidden = !canRead || pages[i].type !== 'story';
     try { localStorage.setItem(KEY, String(i)); } catch (e) {}
     if (!fromLoad && window.matchMedia('(max-width: 760px)').matches) window.scrollTo({ top: 0 });
   }
@@ -975,19 +983,6 @@ main { flex: 1; display: flex; flex-direction: column; align-items: center; just
     const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
     if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(current + (dx < 0 ? 1 : -1));
     sx = null;
-  });
-
-  readBtn.addEventListener('click', () => {
-    const synth = window.speechSynthesis;
-    if (!synth) return;
-    if (synth.speaking) { stopReading(); return; }
-    const p = pages[current];
-    if (p.type !== 'story') return;
-    const u = new SpeechSynthesisUtterance((p.opens ? p.ch + '. ' : '') + p.text.join(' '));
-    u.rate = 0.9; u.pitch = 1.05;
-    u.onend = () => { readLabel.textContent = 'Read this page'; };
-    readLabel.textContent = 'Stop reading';
-    try { synth.speak(u); } catch (e) { stopReading(); }
   });
 
   let start = 0;
