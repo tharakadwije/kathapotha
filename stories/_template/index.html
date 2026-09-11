@@ -1,0 +1,67 @@
+<!doctype html>
+<!--
+  STORY TEMPLATE
+  1. Copy this whole folder and rename it, e.g. stories/my-new-story/
+  2. Change data-story below to the story's id from assets/library.js
+  3. Write the story in window.STORY further down
+  4. Put pictures (drawings, photos, png/jpg/svg) in the pictures folder
+  5. Add the story to assets/library.js with status "ready"
+-->
+<html lang="en" data-root="../../" data-story="template-example">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Grandstander:wght@600;800&display=swap" rel="stylesheet">
+<title>My Story Title</title>
+<link rel="stylesheet" href="../../assets/reader.css">
+<script src="../../assets/library.js"></script>
+<script src="../../assets/story-kit.js"></script>
+</head>
+<body>
+<noscript>Please turn on JavaScript to read this story.</noscript>
+
+<script>
+window.STORY = {
+  title: "My Story Title",
+  subtitle: "and a second line if you want one",
+  by: "our young author",
+  intro: "A story in two chapters. Turn the pages with the buttons below, or use the arrow keys.",
+  coverEmoji: "🌈",                 // or coverPicture: "pictures/cover.png"
+  coverAlt: "A big rainbow.",
+  theme: { accent: "#b0487a", heading: "#3f6fa0" },
+
+  pages: [
+    {
+      chapter: "Chapter One",
+      picture: "pictures/example.svg",
+      alt: "A rainbow over green hills with the sun shining.",
+      text: [
+        "Write the first page of the story here.",
+        "Each line in quotes becomes its own paragraph."
+      ]
+    },
+    {
+      chapter: "Chapter One",
+      emoji: "🐢",
+      alt: "A turtle.",
+      text: ["No drawing for this page yet? Use an emoji instead of a picture."]
+    },
+    {
+      chapter: "Chapter Two",
+      emoji: "🏰",
+      alt: "A castle.",
+      text: ["When the chapter name changes, the page gets a big chapter heading."]
+    }
+  ],
+
+  ending: "Write one last happy sentence here.",
+  endEmoji: "🌟"
+};
+</script>
+<script src="../../assets/reader.js"></script>
+</body>
+</html>
