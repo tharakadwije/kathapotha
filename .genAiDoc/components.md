@@ -28,6 +28,7 @@ This file documents the main UI components and their expected markup/behaviour.
 - Markup: a `.read-tools` wrapper holding an empty `.voice-pick` and the `#read` pill with `#read-label`. Hide `.read-tools` on pages without story text.
 - API: `ReadAloud.attach({ button, label, picker, getText })` returns `{ stop }`; call `stop()` on every page turn.
 - Voices: 👧 Girl (default) and 👦 Boy, native-English voices only (US, UK, AU, CA, IE, NZ). Pitch is lifted so both sound cute and child-like; Edge's Ana/Maisie child voices are preferred. Chrome's online "Google …" voices are ranked last: they sound robotic with the pitch lifted, and Chrome only offers them on the website (not on `file://`), so the live site would sound different from local testing. The choice is saved in `localStorage` (`storyshelf:voice`) and a short "Hi!" plays when it changes.
+- Edge tip: in any browser other than Edge, pressing "Read this page" shows a small `.edge-tip` speech bubble under the button suggesting Microsoft Edge. Only Edge has the natural voices; Chrome's Windows and Google voices sound robotic however they're tuned. On Windows the tip has an "Open in Edge" button (a `microsoft-edge:` link). "Got it" hides it for good in that browser (`localStorage` `storyshelf:edge-tip`). Edge is detected from the user agent (`Edg/`, `EdgA/`, `EdgiOS/`).
 - Text is spoken in short pieces so Chrome doesn't cut off long pages. Styles are injected by the script (like `story-kit.js`) and use the page's `--btn`, `--btn-ink` and `--display` tokens.
 
 7) Published date
