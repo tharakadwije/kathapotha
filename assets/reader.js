@@ -1,5 +1,6 @@
 /* Reusable picture-book reader.
    A story page defines window.STORY (see stories/_template/index.html) and loads this file.
+   The "Read this page" button needs assets/read-aloud.js in the page's <head>.
    You normally don't need to edit this file. */
 (function () {
   const S = window.STORY;
@@ -20,10 +21,13 @@
   document.body.innerHTML = `
     <header class="bar">
       <div class="bar-left">
-        <a class="pill" data-site-link="home" href="../../">${shelfIcon}<span>Story Shelf</span></a>
+        <a class="pill" data-site-link="home" href="${esc(window.StorySite ? StorySite.home : '../../index.html')}">${shelfIcon}<span>Story Shelf</span></a>
         <span class="bar-title">${esc(S.title)}</span>
       </div>
-      <button class="pill" id="read" type="button" hidden>${speaker}<span id="read-label">Read this page</span></button>
+      <div class="read-tools" id="read-tools" hidden>
+        <div class="voice-pick" id="voice-pick"></div>
+        <button class="pill" id="read" type="button">${speaker}<span id="read-label">Read this page</span></button>
+      </div>
     </header>
     <main>
       <div class="book" id="book" aria-live="polite"></div>
@@ -45,8 +49,16 @@
   const total = pages.length;
 
   const $ = (x) => document.getElementById(x);
-  const book = $('book'), prev = $('prev'), next = $('next'), count = $('count'), readBtn = $('read'), readLabel = $('read-label');
+  const book = $('book'), prev = $('prev'), next = $('next'), count = $('count'), readTools = $('read-tools');
+  const canRead = !!(window.ReadAloud && ReadAloud.supported);
   let current = 0;
+  const voice = canRead ? ReadAloud.attach({
+    button: $('read'), label: $('read-label'), picker: $('voice-pick'),
+    getText: () => {
+      const p = pages[current];
+      return p.type === 'story' ? (p.opens ? p.chapter + '. ' : '') + (p.text || []).join(' ') : '';
+    },
+  }) : { stop() {} };
 
   function picture(p, fallbackAlt) {
     const alt = p.alt || fallbackAlt || '';
@@ -79,15 +91,10 @@
       </section>`;
   }
 
-  function stopReading() {
-    try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
-    readLabel.textContent = 'Read this page';
-  }
-
   function go(i, fromLoad) {
     if (i < 0 || i >= total) return;
     const dir = i >= current ? 'turn-next' : 'turn-prev';
-    stopReading();
+    voice.stop();
     current = i;
     book.classList.remove('turn-next', 'turn-prev');
     book.innerHTML = pageHTML(i);
@@ -95,7 +102,7 @@
     prev.disabled = i === 0;
     next.disabled = i === total - 1;
     count.textContent = `${i + 1} / ${total}`;
-    readBtn.hidden = !window.speechSynthesis || pages[i].type !== 'story';
+    readTools.hidden = !canRead || pages[i].type !== 'story';
     try { localStorage.setItem(KEY, String(i)); } catch (e) {}
     if (!fromLoad && window.matchMedia('(max-width: 760px)').matches) window.scrollTo({ top: 0 });
   }
@@ -116,19 +123,6 @@
     if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(current + (dx < 0 ? 1 : -1));
     sx = null;
   });
-  readBtn.addEventListener('click', () => {
-    const synth = window.speechSynthesis;
-    if (!synth) return;
-    if (synth.speaking) { stopReading(); return; }
-    const p = pages[current];
-    if (p.type !== 'story') return;
-    const u = new SpeechSynthesisUtterance((p.opens ? p.chapter + '. ' : '') + (p.text || []).join(' '));
-    u.rate = 0.9; u.pitch = 1.05;
-    u.onend = () => { readLabel.textContent = 'Read this page'; };
-    readLabel.textContent = 'Stop reading';
-    try { synth.speak(u); } catch (e) { stopReading(); }
-  });
-
   let start = 0;
   try { const v = Number(localStorage.getItem(KEY)); if (Number.isInteger(v) && v >= 0 && v < total) start = v; } catch (e) {}
   go(start, true);
