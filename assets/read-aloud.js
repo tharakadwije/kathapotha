@@ -9,11 +9,19 @@
      Microsoft Edge has real child voices (Ana, Maisie) and sounds best.
    - "Boy" picks a young-sounding man's voice and lifts the pitch further so it sounds like a little boy.
    Both read a little slower than normal speech so young listeners can follow along.
-   The choice is remembered in this browser. */
+   The choice is remembered in this browser.
+
+   In any browser other than Edge, pressing "Read this page" also shows a small tip suggesting Edge,
+   because only Edge has the clear, natural-sounding voices (Chrome's sound robotic). On Windows the tip
+   has an "Open in Edge" button. "Got it" hides the tip for good in that browser. */
 (function () {
   const synth = window.speechSynthesis;
   const KEY = 'storyshelf:voice';
+  const TIP_KEY = 'storyshelf:edge-tip';
   const HELLO = 'Hi! I can read the story to you.';
+  const UA = navigator.userAgent || '';
+  const IS_EDGE = /\bEdg(e|A|iOS)?\//.test(UA);
+  const ON_WINDOWS = /Windows/.test(UA);
 
   // Voice names for each choice, best first: Edge's natural voices, then the usual Safari, Windows and
   // Android ones (Android's "sfg", "iol"... are parts of its voice ids).
@@ -122,7 +130,26 @@
       font: 600 .95rem var(--display, "Grandstander", "Comic Sans MS", system-ui, sans-serif);
     }
     .voice-opt[aria-pressed="true"] { background: var(--btn-ink, #2e4a3e); color: var(--btn, #fffaf0); }
-    .voice-emoji { font-size: 1.1rem; line-height: 1; }`;
+    .voice-emoji { font-size: 1.1rem; line-height: 1; }
+    .read-tools { position: relative; }
+    .edge-tip {
+      position: absolute; top: calc(100% + 12px); right: 0; z-index: 40; width: min(320px, 88vw);
+      padding: 12px 14px; border: 2px solid currentColor; border-radius: 16px;
+      background: var(--btn, #fffaf0); color: var(--btn-ink, #2e4a3e); box-shadow: 0 6px 16px rgba(0,0,0,.2);
+      font: 400 1rem/1.4 var(--body, "Andika", "Trebuchet MS", system-ui, sans-serif); text-align: left;
+    }
+    .edge-tip::before {
+      content: ""; position: absolute; top: -9px; right: 36px; width: 14px; height: 14px; background: inherit;
+      border-top: 2px solid currentColor; border-left: 2px solid currentColor; transform: rotate(45deg);
+    }
+    .edge-tip p { margin: 0; }
+    .edge-tip-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+    .edge-tip-actions a, .edge-tip-actions button {
+      border: 2px solid currentColor; border-radius: 999px; padding: 5px 14px; cursor: pointer; text-decoration: none; line-height: 1.2;
+      font: 600 .95rem var(--display, "Grandstander", "Comic Sans MS", system-ui, sans-serif);
+    }
+    .edge-tip-open { background: var(--btn-ink, #2e4a3e); color: var(--btn, #fffaf0); border-color: var(--btn-ink, #2e4a3e) !important; }
+    .edge-tip-close { background: transparent; color: inherit; }`;
 
   function attach(o) {
     if (!synth) return { stop() {} };
@@ -135,10 +162,33 @@
         ? '<span class="label-long">Stop reading</span><span class="label-short">Stop</span>'
         : '<span class="label-long">Read this page</span><span class="label-short">Read</span>';
     };
+    // Not in Edge: suggest it, because Edge's natural voices sound much nicer than this browser's.
+    let tip = null;
+    const showTip = () => {
+      const tools = o.button.closest('.read-tools') || o.button.parentElement;
+      if (IS_EDGE || tip || !tools) return;
+      try { if (localStorage.getItem(TIP_KEY)) return; } catch (e) {}
+      tip = document.createElement('div');
+      tip.className = 'edge-tip';
+      tip.setAttribute('role', 'status');
+      tip.innerHTML = '<p><span aria-hidden="true">🎧</span> Psst! Stories sound nicest in <strong>Microsoft Edge</strong>. ' +
+        'Its reading voices are extra clear and friendly.</p><div class="edge-tip-actions">' +
+        (ON_WINDOWS ? '<a class="edge-tip-open">Open in Edge</a>' : '') + '<button type="button" class="edge-tip-close">Got it</button></div>';
+      // Windows opens microsoft-edge: links in Edge.
+      if (ON_WINDOWS) tip.querySelector('.edge-tip-open').href = 'microsoft-edge:' + location.href;
+      tip.querySelector('.edge-tip-close').addEventListener('click', () => {
+        try { localStorage.setItem(TIP_KEY, 'seen'); } catch (e) {}
+        tip.remove();
+        o.button.focus();
+      });
+      tools.appendChild(tip);
+    };
+
     const stop = () => { reading = false; hush(); setLabel(); };
     const read = () => {
       const text = o.getText();
       if (!text) return;
+      showTip();
       reading = true;
       setLabel();
       say(text, choice, () => { reading = false; setLabel(); });

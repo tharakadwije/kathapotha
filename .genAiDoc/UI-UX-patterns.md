@@ -33,6 +33,7 @@ Read aloud
 - Every story page has a "Read this page" pill with a 👧 Girl / 👦 Boy voice picker beside it (see `components.md`).
 - Voices must sound friendly and child-like — never a deep grown-up voice. Girl is the default.
 - Keep the voice names visible next to the emoji at every width; on small screens the header wraps to a second row instead.
+- Outside Edge, the first "Read this page" shows a friendly, dismissible tip suggesting Edge for the nicest voice. Keep it a gentle suggestion: reading still starts straight away.
 
 Interactions & animation
 - Minimal motion: subtle lifts on hover (`transform: translateY(-10px)`) and tactile button press.
