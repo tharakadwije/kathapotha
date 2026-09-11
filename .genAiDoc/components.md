@@ -13,7 +13,7 @@ This file documents the main UI components and their expected markup/behaviour.
 - Interaction: link to `path`, show `cover-num` when `book` exists.
 
 3) Tile (list item)
-- Markup: `.tile` with cover and `.tile-meta` including status or series info.
+- Markup: `.tile` with cover and `.tile-meta` including status or series info, plus a `.tile-date` "Published …" line for ready books.
 
 4) Series band
 - Uses `seriesBand()` in `assets/site.js` — badge on the left, title, blurb and horizontal list of books.
@@ -29,6 +29,16 @@ This file documents the main UI components and their expected markup/behaviour.
 - API: `ReadAloud.attach({ button, label, picker, getText })` returns `{ stop }`; call `stop()` on every page turn.
 - Voices: 👧 Girl (default) and 👦 Boy, native-English voices only (US, UK, AU, CA, IE, NZ). Pitch is lifted so both sound cute and child-like; Edge's Ana/Maisie child voices are preferred. Chrome's online "Google …" voices are ranked last: they sound robotic with the pitch lifted, and Chrome only offers them on the website (not on `file://`), so the live site would sound different from local testing. The choice is saved in `localStorage` (`storyshelf:voice`) and a short "Hi!" plays when it changes.
 - Text is spoken in short pieces so Chrome doesn't cut off long pages. Styles are injected by the script (like `story-kit.js`) and use the page's `--btn`, `--btn-ink` and `--display` tokens.
+
+7) Published date
+- Every ready story has `published: "YYYY-MM-DD"` in `assets/library.js`. The newest published story is featured on the home page.
+- Shown as "Published 11 September 2026" in a `<time datetime>` element: on tiles, in the home "Newest story" feature, on series page book rows (`published()` in `assets/site.js`), and on the book's title page (`StorySite.publishedLine()` in `assets/story-kit.js`).
+- The date is formatted by hand (not `new Date()`), so it never shifts a day in other time zones. Keep the two copies of the format the same.
+
+8) Kind note (copyright notice)
+- `kindNote()` in `assets/site.js` adds "A little note from Akie" (`.kind-note`) at the bottom of the home page: stories and pictures belong to Akie; read and listen here as often as you like; please don't copy, print, share or use them anywhere else.
+- Tone: written for children. Warm, cheerful and thankful, with a few emoji. No legal words, warnings or threats. The only formal part is the small `.fine` © line.
+- The © years (`copyrightYears()`) run from the first to the latest `published` year and also appear in the footer on every site page.
 
 Extending components
 - If you need new component variants, add a function in `assets/site.js` and document the API here.

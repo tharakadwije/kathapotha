@@ -72,6 +72,7 @@
       return `<section class="page title-page">
           <h1><span class="t1">${esc(S.title)}</span>${S.subtitle ? `<span class="t2">${esc(S.subtitle)}</span>` : ''}</h1>
           ${S.by ? `<p class="by">By ${esc(S.by)}</p>` : ''}
+          ${window.StorySite ? StorySite.publishedLine() : ''}
           ${S.intro ? `<p class="hint">${esc(S.intro)}</p>` : ''}
           <button class="pill" type="button" data-go="1">Open the book</button>
         </section>

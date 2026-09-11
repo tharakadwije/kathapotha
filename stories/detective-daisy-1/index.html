@@ -922,6 +922,7 @@ main { flex: 1; display: flex; flex-direction: column; align-items: center; just
     if (p.type === 'cover') {
       return `<section class="page title-page">
           <h1><span class="t1">Detective Daisy</span><span class="t2">and the Mystery of the Missing Lucky Carrot</span></h1>
+          ${window.StorySite ? StorySite.publishedLine() : ''}
           <p class="hint">A story in five chapters. Turn the pages with the buttons below, or use the arrow keys.</p>
           <button class="pill" type="button" data-go="1">Open the book</button>
         </section>

@@ -20,7 +20,11 @@
     emoji     used on the cover when there is no picture
     color     cover colour
     blurb     one or two sentences about the story
-    added     "YYYY-MM-DD" — the newest ready story is featured on the home page
+    published "YYYY-MM-DD" — the day the book went on the shelf (needed for every "ready" story).
+              It shows as "Published 11 September 2026" on the shelf, the series page and the
+              book's title page, and the newest published story is featured on the home page.
+
+  Adding a new book? Follow the checklist in .genAiDoc/new-book-checklist.md.
 */
 
 window.LIBRARY = {
@@ -53,7 +57,7 @@ window.LIBRARY = {
       color: "#4f7f3f",
       blurb: "Rebecca the bunny's lucky carrot has gone missing. Daisy follows the clues from a horse barn all the way to Lava Volcano.",
       chapters: 5,
-      added: "2026-09-11",
+      published: "2026-09-11",
     },
     {
       id: "daisy-book-2",
@@ -83,7 +87,7 @@ window.LIBRARY = {
       emoji: "🌈",
       color: "#b0487a",
       blurb: "A starter story page you can copy for new stories.",
-      added: "2026-09-11",
+      published: "2026-09-11",
     },
   ],
 };

@@ -8,6 +8,8 @@
    - Adds a "Story Shelf" button in the top corner, unless the page already has
      an element with data-site-link="home" (it will point that element home instead).
    - StorySite.endButtons() returns buttons for "The End": next book in the series + back to the shelf.
+   - StorySite.publishedLine() returns "Published 11 September 2026" for the title page, from the
+     story's `published` date in assets/library.js (empty if it has none).
    - StorySite.url("stories/x/") makes a link from the top of the site that also works when the page
      is opened straight from disk (file://), where folder links need index.html on the end.
 
@@ -38,6 +40,13 @@
       .sort((a, b) => a.book - b.book)[0] || null;
   }
 
+  // Same wording and format as published() in assets/site.js.
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  function publishedLine() {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((story && story.published) || '');
+    return m ? `<p class="site-published">Published <time datetime="${m[0]}">${Number(m[3])} ${MONTHS[m[2] - 1]} ${m[1]}</time></p>` : '';
+  }
+
   const shelfIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg>';
 
   const StorySite = {
@@ -45,6 +54,7 @@
     url,
     story, series,
     next: nextBook,
+    publishedLine,
     endButtons() {
       const n = nextBook();
       let out = '';
@@ -63,6 +73,7 @@
     .site-pill { text-decoration: none; }
     .site-end { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
     .site-soon { margin: 0; font-family: "Grandstander", "Comic Sans MS", sans-serif; font-weight: 600; opacity: .8; }
+    .site-published { margin: 0; font-family: "Grandstander", "Comic Sans MS", sans-serif; font-weight: 600; font-size: clamp(.95rem, 1.2vw, 1.05rem); opacity: .75; }
     .site-home-float {
       position: fixed; top: 12px; left: 12px; z-index: 50; display: inline-flex; align-items: center; gap: 8px;
       background: #fffaf0; color: #3e2e22; border: 2px solid currentColor; border-radius: 999px; padding: 6px 14px;
