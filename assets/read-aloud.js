@@ -15,21 +15,25 @@
   const KEY = 'storyshelf:voice';
   const HELLO = 'Hi! I can read the story to you.';
 
-  // Voice names for each choice, best first: Edge's natural voices, then the usual Chrome, Safari,
-  // Windows and Android ones (Android's "sfg", "iol"... are parts of its voice ids).
+  // Voice names for each choice, best first: Edge's natural voices, then the usual Safari, Windows and
+  // Android ones (Android's "sfg", "iol"... are parts of its voice ids).
+  // Chrome's online "Google ..." voices come last: they sound robotic with the pitch lifted, and Chrome only
+  // offers them on the website (not on file://), so ranking them higher made the live site sound different.
   // pitch: kid = a real child voice, natural = a natural/neural voice, other = any other match, none = nothing matched.
   const CHOICES = {
     girl: {
       emoji: '👧', name: 'Girl', kid: /\b(Ana|Maisie)\b/i, pitch: { kid: 1.15, natural: 1.35, other: 1.5, none: 1.6 },
       names: ['Ana', 'Maisie', 'Jenny', 'Aria', 'Ava', 'Emma', 'Michelle', 'Sonia', 'Libby', 'Natasha', 'Clara', 'Heather', 'Hayley',
-        'Google US English', 'Google UK English Female', 'Samantha', 'Zoe', 'Karen', 'Moira', 'Fiona', 'Victoria',
-        'Allison', 'Susan', 'Kate', 'Serena', 'Catherine', 'Hazel', 'Zira', 'Female', 'sfg', 'tpf', 'tpc'],
+        'Samantha', 'Zoe', 'Karen', 'Moira', 'Fiona', 'Victoria',
+        'Allison', 'Susan', 'Kate', 'Serena', 'Catherine', 'Hazel', 'Zira', 'Female', 'sfg', 'tpf', 'tpc',
+        'Google US English', 'Google UK English Female'],
     },
     boy: {
       emoji: '👦', name: 'Boy', pitch: { natural: 1.5, other: 1.65, none: 1.2 },
       names: ['Brian', 'Andrew', 'Ryan', 'Guy', 'Eric', 'Roger', 'Steffan', 'Christopher', 'Thomas', 'William', 'Liam', 'Connor', 'Mitchell',
-        'Google UK English Male', 'Aaron', 'Nathan', 'Evan', 'Tom', 'Oliver', 'Arthur', 'Daniel', 'Alex',
-        'Mark', 'David', 'George', 'James', 'Richard', 'Sean', 'Male', 'iol', 'iom', 'tpd', 'rjs'],
+        'Aaron', 'Nathan', 'Evan', 'Tom', 'Oliver', 'Arthur', 'Daniel', 'Alex',
+        'Mark', 'David', 'George', 'James', 'Richard', 'Sean', 'Male', 'iol', 'iom', 'tpd', 'rjs',
+        'Google UK English Male'],
     },
   };
   Object.values(CHOICES).forEach((c) => { c.match = c.names.map((n) => new RegExp('\\b' + n, 'i')); });
