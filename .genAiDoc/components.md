@@ -27,7 +27,7 @@ This file documents the main UI components and their expected markup/behaviour.
 - `assets/read-aloud.js`, loaded in the story page `<head>` after `story-kit.js`. Uses the browser's built-in Web Speech API — no download.
 - Markup: a `.read-tools` wrapper holding an empty `.voice-pick` and the `#read` pill with `#read-label`. Hide `.read-tools` on pages without story text.
 - API: `ReadAloud.attach({ button, label, picker, getText })` returns `{ stop }`; call `stop()` on every page turn.
-- Voices: 👧 Girl (default) and 👦 Boy, native-English voices only (US, UK, AU, CA, IE, NZ). Pitch is lifted so both sound cute and child-like; Edge's Ana/Maisie child voices are preferred. The choice is saved in `localStorage` (`storyshelf:voice`) and a short "Hi!" plays when it changes.
+- Voices: 👧 Girl (default) and 👦 Boy, native-English voices only (US, UK, AU, CA, IE, NZ). Pitch is lifted so both sound cute and child-like; Edge's Ana/Maisie child voices are preferred. Chrome's online "Google …" voices are ranked last: they sound robotic with the pitch lifted, and Chrome only offers them on the website (not on `file://`), so the live site would sound different from local testing. The choice is saved in `localStorage` (`storyshelf:voice`) and a short "Hi!" plays when it changes.
 - Text is spoken in short pieces so Chrome doesn't cut off long pages. Styles are injected by the script (like `story-kit.js`) and use the page's `--btn`, `--btn-ink` and `--display` tokens.
 
 Extending components
