@@ -6,7 +6,17 @@
   const page = document.body.dataset.page;
 
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const url = (p) => root + (p || '');
+  const isFileProtocol = typeof location !== 'undefined' && location.protocol === 'file:';
+  const url = (p) => {
+    const path = p || '';
+    let out = root + path;
+    if (isFileProtocol) {
+      if (out.endsWith('index.html')) return out;
+      if (out.endsWith('/')) return out + 'index.html';
+      if (path === '') return out + 'index.html';
+    }
+    return out;
+  };
   const visible = L.stories.filter((s) => s.status === 'ready' || s.status === 'soon');
   const seriesById = (id) => L.series.find((s) => s.id === id);
   const inSeries = (id) => visible.filter((s) => s.series === id).sort((a, b) => (a.book || 0) - (b.book || 0));
