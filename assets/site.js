@@ -8,14 +8,27 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const isFileProtocol = typeof location !== 'undefined' && location.protocol === 'file:';
   const url = (p) => {
-    const path = p || '';
-    let out = root + path;
+    const path = String(p || '');
+    // split into base / query / hash
+    const m = path.match(/^([^?#]*)(\?[^#]*)?(#.*)?$/);
+    const base = m ? m[1] : path;
+    const query = m && m[2] ? m[2] : '';
+    const hash = m && m[3] ? m[3] : '';
+    let out = root + base;
     if (isFileProtocol) {
-      if (out.endsWith('index.html')) return out;
-      if (out.endsWith('/')) return out + 'index.html';
-      if (path === '') return out + 'index.html';
+      // If the link is to a directory (base ends with /) or empty, append index.html
+      if (base === '' || base.endsWith('/')) {
+        if (!out.endsWith('/')) out += '/';
+        out = out + 'index.html';
+      }
+      // If the original path started with only a query or hash (e.g. '?id=..' or '#top'),
+      // ensure we return the index.html at the root
+      if (!base && (query || hash)) {
+        out = root + 'index.html' + query + hash;
+        return out;
+      }
     }
-    return out;
+    return out + query + hash;
   };
   const visible = L.stories.filter((s) => s.status === 'ready' || s.status === 'soon');
   const seriesById = (id) => L.series.find((s) => s.id === id);
