@@ -32,6 +32,11 @@ window.LIBRARY = {
     name: "Read Aloud Akie",
     author: "Akie",   // use a first name or pen name only
     tagline: "Stories read aloud by Akie — pick a book and enjoy.",
+
+    // "Letters to Akie" on story pages. Paste the address of your Cloudflare Worker here,
+    // e.g. "https://read-aloud-comments.your-name.workers.dev" (see .genAiDoc/comments.md).
+    // Left empty, the letters panel simply doesn't appear.
+    comments: "https://read-aloud-comments.tharakadwijesg.workers.dev",
   },
 
   series: [

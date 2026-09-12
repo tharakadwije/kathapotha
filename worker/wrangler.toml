@@ -1,0 +1,19 @@
+# Cloudflare Worker that stores "Letters to Akie" (see .genAiDoc/comments.md).
+# Deploy steps are in worker/README.md.
+name = "read-aloud-comments"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "read-aloud-comments"
+database_id = "99b9c143-1ec8-4858-b0e0-7eee14730bcd"   # printed by: npx wrangler d1 create read-aloud-comments
+
+[vars]
+# Sites allowed to post and read comments. Add http://localhost:8080 while testing locally.
+ALLOWED_ORIGINS = "https://readaloudakie.com,https://www.readaloudakie.com"
+SITE_NAME = "Read Aloud Akie"
+
+# Secrets (never put these in this file):
+#   npx wrangler secret put ADMIN_TOKEN      <- your own long password, for the moderation page
+#   npx wrangler secret put NOTIFY_WEBHOOK   <- optional Discord/Slack webhook for "new letter" pings

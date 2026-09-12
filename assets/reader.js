@@ -36,7 +36,8 @@
         <span class="count" id="count"></span>
         <button class="pill" id="next" type="button"><span class="label-long">Next page</span><span class="label-short">Next</span></button>
       </nav>
-    </main>`;
+    </main>
+    <section id="letters"></section>`;
 
   const pages = [{ type: 'cover' }];
   let lastChapter = null;
