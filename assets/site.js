@@ -35,6 +35,8 @@
   const inSeries = (id) => visible.filter((s) => s.series === id).sort((a, b) => (a.book || 0) - (b.book || 0));
   const newestFirst = (list) => list.slice().sort((a, b) => String(b.published || '').localeCompare(String(a.published || '')));
   const ready = newestFirst(visible.filter((s) => s.status === 'ready'));
+  // Books are always listed in release order (book 1 first). Only "Newest story" uses ready[0].
+  const inOrder = [...ready].reverse().concat(visible.filter((s) => s.status === 'soon'));
   const fullTitle = (s) => s.subtitle ? `${s.title} ${s.subtitle}` : s.title;
 
   // "2026-09-11" -> "Published 11 September 2026" (written out by hand so the day never shifts with the time zone).
@@ -133,8 +135,8 @@
   function home() {
     const main = document.getElementById('main');
     const newest = ready[0];
-    const standalone = newestFirst(visible.filter((s) => !s.series));
-    const shelfBooks = [...ready, ...visible.filter((s) => s.status === 'soon')];
+    const standalone = inOrder.filter((s) => !s.series);
+    const shelfBooks = inOrder;
 
     main.innerHTML = `
       <section class="hero">
@@ -177,7 +179,7 @@
     const params = new URLSearchParams(location.search);
     let current = params.get('show') || 'all';
     if (!filters.some(([k]) => k === current)) current = 'all';
-    const sorted = [...ready, ...visible.filter((s) => s.status === 'soon')];
+    const sorted = inOrder;
 
     main.innerHTML = `<div class="wrap section" style="padding-top:clamp(18px,4vw,40px)">
       <h1 style="font-size:clamp(2.6rem,7vw,5rem)">All stories</h1>

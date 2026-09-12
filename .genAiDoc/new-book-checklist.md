@@ -21,6 +21,7 @@ Follow every step when a new book goes on the shelf, so nothing is missed.
 - Only use pictures and text that Akie made (or has permission to use).
 
 5) Check before merging
+- The new book should appear LAST on the shelf (release order) and as the "Newest story" on the home page.
 - Open the home page, All stories, the series page and the book through `file://`. Check that the cover, the "Published" date, the links and "Read this page" (👧 / 👦) all work.
 - In Chrome, also check over `http://` (e.g. `python -m http.server`), which is how the live site behaves. Chrome offers different voices there. Pressing Read in Chrome should show the "sounds nicest in Microsoft Edge" tip; in Edge it shouldn't.
 - Go through `accessibility.md`.
