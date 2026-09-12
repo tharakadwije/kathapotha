@@ -1,0 +1,246 @@
+/* Builds the header, footer and page content from assets/library.js.
+   You normally don't need to edit this file. */
+(function () {
+  const L = window.LIBRARY || { site: {}, series: [], stories: [] };
+  const root = document.documentElement.dataset.root || './';
+  const page = document.body.dataset.page;
+
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const isFileProtocol = typeof location !== 'undefined' && location.protocol === 'file:';
+  const url = (p) => {
+    const path = String(p || '');
+    // split into base / query / hash
+    const m = path.match(/^([^?#]*)(\?[^#]*)?(#.*)?$/);
+    const base = m ? m[1] : path;
+    const query = m && m[2] ? m[2] : '';
+    const hash = m && m[3] ? m[3] : '';
+    let out = root + base;
+    if (isFileProtocol) {
+      // If the link is to a directory (base ends with /) or empty, append index.html
+      if (base === '' || base.endsWith('/')) {
+        if (!out.endsWith('/')) out += '/';
+        out = out + 'index.html';
+      }
+      // If the original path started with only a query or hash (e.g. '?id=..' or '#top'),
+      // ensure we return the index.html at the root
+      if (!base && (query || hash)) {
+        out = root + 'index.html' + query + hash;
+        return out;
+      }
+    }
+    return out + query + hash;
+  };
+  const visible = L.stories.filter((s) => s.status === 'ready' || s.status === 'soon');
+  const seriesById = (id) => L.series.find((s) => s.id === id);
+  const inSeries = (id) => visible.filter((s) => s.series === id).sort((a, b) => (a.book || 0) - (b.book || 0));
+  const newestFirst = (list) => list.slice().sort((a, b) => String(b.published || '').localeCompare(String(a.published || '')));
+  const ready = newestFirst(visible.filter((s) => s.status === 'ready'));
+  // Books are always listed in release order (book 1 first). Only "Newest story" uses ready[0].
+  const inOrder = [...ready].reverse().concat(visible.filter((s) => s.status === 'soon'));
+  const fullTitle = (s) => s.subtitle ? `${s.title} ${s.subtitle}` : s.title;
+
+  // "2026-09-11" -> "Published 11 September 2026" (written out by hand so the day never shifts with the time zone).
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  function published(s) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s.published || '');
+    return m ? `Published <time datetime="${m[0]}">${Number(m[3])} ${MONTHS[m[2] - 1]} ${m[1]}</time>` : '';
+  }
+  // © years, from the first to the latest published book, e.g. "2026" or "2026–2028".
+  function copyrightYears() {
+    const years = ready.map((s) => String(s.published || '').slice(0, 4)).filter((y) => /^\d{4}$/.test(y)).sort();
+    const first = years[0] || String(new Date().getFullYear());
+    const last = years[years.length - 1] || first;
+    return first === last ? first : `${first}–${last}`;
+  }
+
+  function where(s) {
+    const se = seriesById(s.series);
+    if (se && s.book) return `Book ${s.book} of ${se.title}`;
+    if (se) return `Part of ${se.title}`;
+    return 'A story on its own';
+  }
+
+  /* ---------- pieces ---------- */
+  const bookIcon = `<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="9" width="9" height="26" rx="2" fill="#d9691a" stroke="currentColor" stroke-width="2.4"/><rect x="14" y="5" width="9" height="30" rx="2" fill="#4f7f3f" stroke="currentColor" stroke-width="2.4"/><rect x="24.5" y="10" width="9" height="25" rx="2" fill="#3f6fa0" stroke="currentColor" stroke-width="2.4" transform="rotate(12 29 22)"/><path d="M2 36.5h36" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>`;
+  const openIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.5c3-1.3 6.5-1.3 10 1 3.5-2.3 7-2.3 10-1V19c-3-1.3-6.5-1.3-10 1-3.5-2.3-7-2.3-10-1z"/><path d="M12 6.5V20"/></svg>`;
+
+  function coverArt(s) {
+    if (s.cover) return `<div class="cover-art"><img src="${esc(url(s.cover))}" alt="" loading="lazy"></div>`;
+    return `<div class="cover-art"><span class="cover-emoji" aria-hidden="true">${esc(s.emoji || '📖')}</span></div>`;
+  }
+
+  function cover(s, opts = {}) {
+    if (s.status === 'soon') {
+      return `<div class="parcel" role="img" aria-label="${esc(fullTitle(s))}, coming soon">
+        <span class="parcel-tag">Coming soon<small>${esc(s.book ? 'Book ' + s.book : s.emoji || '')}</small></span></div>`;
+    }
+    const num = s.book && !opts.noNumber ? `<span class="cover-num" aria-hidden="true">${s.book}</span>` : '';
+    const inner = `<div class="cover" style="--c:${esc(s.color || '#4f7f3f')}">
+        <div class="cover-title">${esc(s.title)}${s.subtitle ? `<span class="cover-sub">${esc(s.subtitle)}</span>` : ''}</div>
+        ${coverArt(s)}${num}</div>`;
+    return `<a class="cover-link" href="${esc(url(s.path))}" aria-label="Read ${esc(fullTitle(s))}">${inner}</a>`;
+  }
+
+  function tile(s, opts) {
+    const status = s.status === 'soon' ? 'Coming soon' : where(s);
+    const date = s.status === 'ready' ? published(s) : '';
+    return `<li class="tile">${cover(s, opts)}<div class="tile-meta"><strong>${esc(s.status === 'soon' && !s.book ? s.title : fullTitle(s))}</strong><span>${esc(status)}</span>${date ? `<span class="tile-date">${date}</span>` : ''}</div></li>`;
+  }
+
+  function header() {
+    const el = document.querySelector('[data-site-header]');
+    if (!el) return;
+    const links = [['home', '', 'Home'], ['stories', 'stories/', 'All stories'], ['series', 'series/', 'Series']];
+    el.className = 'site-head';
+    el.innerHTML = `<a class="brand" href="${url('')}">${bookIcon}<span>${esc(L.site.name)}</span></a>
+      <nav class="site-nav" aria-label="Main"><ul>${links.map(([k, p, t]) =>
+        `<li><a href="${url(p)}"${k === page || (k === 'series' && page === 'series-one') ? ' aria-current="page"' : ''}>${t}</a></li>`).join('')}</ul></nav>`;
+  }
+
+  function footer() {
+    const el = document.querySelector('[data-site-footer]');
+    if (!el) return;
+    el.className = 'site-foot';
+    el.innerHTML = `<div class="shelf-plank" aria-hidden="true"></div><p>© ${copyrightYears()} ${esc(L.site.name)}. Every story here was written by ${esc(L.site.author)}.</p>`;
+  }
+
+  // The copyright notice on the home page, written for children: kind and cheerful, never scary.
+  function kindNote() {
+    const a = esc(L.site.author);
+    return `<section class="section wrap" aria-labelledby="note-h">
+      <div class="kind-note">
+        <div class="kind-note-icon" aria-hidden="true">💌</div>
+        <div>
+          <h2 id="note-h">A little note from ${a}</h2>
+          <p>Every story and every picture on this shelf was made by ${a}, with lots of love (and a few lucky carrots 🥕).</p>
+          <p>You can read them and listen to them right here, as many times as you like!</p>
+          <p>Please don't copy, print, share or use them anywhere else. These stories love living here on the shelf, so they're always waiting for you when you come back. 🏡</p>
+          <p class="kind-note-thanks">Thank you for being a kind reader! 💛</p>
+          <p class="fine">© ${copyrightYears()} ${a}. All stories and pictures on ${esc(L.site.name)} belong to ${a}.</p>
+        </div>
+      </div></section>`;
+  }
+
+  function seriesBand(se) {
+    const books = inSeries(se.id);
+    const badge = se.badge ? `<img src="${esc(url(se.badge))}" alt="">` : `<span class="cover-emoji" aria-hidden="true">${esc(se.emoji || '📚')}</span>`;
+    return `<article class="series-band">
+      <div class="series-top"><div class="badge">${badge}</div>
+        <div><h3><a href="${url('series/')}?id=${encodeURIComponent(se.id)}">${esc(se.title)}</a></h3><p>${esc(se.blurb)}</p></div></div>
+      <ol class="series-books">${books.map((b) => tile(b)).join('')}</ol>
+    </article>`;
+  }
+
+  /* ---------- pages ---------- */
+  function home() {
+    const main = document.getElementById('main');
+    const newest = ready[0];
+    const standalone = inOrder.filter((s) => !s.series);
+    const shelfBooks = inOrder;
+
+    main.innerHTML = `
+      <section class="hero">
+        <div class="hero-card wrap">
+          <h1>${esc(L.site.name)}</h1>
+          <p class="lede">${esc(L.site.tagline)}</p>
+          ${newest ? `<div class="actions"><a class="btn" href="${esc(url(newest.path))}">${openIcon}Read the newest story</a></div>` : ''}
+        </div>
+      </section>
+
+      <section class="shelf" aria-label="Books on the shelf">
+        <div class="shelf-row">${shelfBooks.map((s) => cover(s)).join('')}</div>
+        <div class="shelf-plank" aria-hidden="true"></div>
+      </section>
+
+      ${newest ? `<section class="section wrap" aria-labelledby="newest-h">
+        <div class="section-head"><h2 id="newest-h">Newest story</h2></div>
+        <article class="feature">${cover(newest, { noNumber: false })}
+          <div><h2>${esc(newest.title)}${newest.subtitle ? `<span>${esc(newest.subtitle)}</span>` : ''}</h2>
+          <p class="from">${esc(where(newest))}${newest.chapters ? `, in ${newest.chapters} chapters` : ''}${newest.published ? `<span class="published">${published(newest)}</span>` : ''}</p>
+          <p>${esc(newest.blurb)}</p>
+          <a class="btn" href="${esc(url(newest.path))}">${openIcon}Start reading</a></div>
+        </article></section>` : ''}
+
+      ${L.series.length ? `<section class="section wrap" aria-labelledby="series-h">
+        <div class="section-head"><h2 id="series-h">Series</h2><a class="text-link" href="${url('series/')}">See every series</a></div>
+        <div class="series-list">${L.series.map(seriesBand).join('')}</div></section>` : ''}
+
+      ${standalone.length ? `<section class="section wrap" aria-labelledby="solo-h">
+        <div class="section-head"><h2 id="solo-h">Stories on their own</h2><a class="text-link" href="${url('stories/')}">See all stories</a></div>
+        <ul class="tiles">${standalone.map((s) => tile(s)).join('')}</ul></section>` : ''}
+
+      ${kindNote()}`;
+  }
+
+  function stories() {
+    const main = document.getElementById('main');
+    const filters = [['all', 'All'], ['ready', 'Ready to read'], ['soon', 'Coming soon'],
+      ...L.series.map((s) => ['series:' + s.id, s.title]), ['solo', 'On their own']];
+    const params = new URLSearchParams(location.search);
+    let current = params.get('show') || 'all';
+    if (!filters.some(([k]) => k === current)) current = 'all';
+    const sorted = inOrder;
+
+    main.innerHTML = `<div class="wrap section" style="padding-top:clamp(18px,4vw,40px)">
+      <h1 style="font-size:clamp(2.6rem,7vw,5rem)">All stories</h1>
+      <ul class="chips" aria-label="Show">${filters.map(([k, t]) => `<li><button class="chip" type="button" data-f="${esc(k)}" aria-pressed="${k === current}">${esc(t)}</button></li>`).join('')}</ul>
+      <ul class="tiles" id="tiles"></ul><p class="empty" id="empty" hidden>No books here yet. Try "All" to see every story.</p></div>`;
+
+    const tiles = document.getElementById('tiles');
+    const empty = document.getElementById('empty');
+    function draw() {
+      const list = sorted.filter((s) => current === 'all' || s.status === current ||
+        (current === 'solo' && !s.series) || current === 'series:' + s.series);
+      tiles.innerHTML = list.map((s) => tile(s)).join('');
+      empty.hidden = list.length > 0;
+      main.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.f === current)));
+    }
+    main.querySelector('.chips').addEventListener('click', (e) => {
+      const b = e.target.closest('.chip'); if (!b) return;
+      current = b.dataset.f;
+      const u = new URL(location.href);
+      if (current === 'all') u.searchParams.delete('show'); else u.searchParams.set('show', current);
+      history.replaceState(null, '', u);
+      draw();
+    });
+    draw();
+  }
+
+  function seriesPage() {
+    const main = document.getElementById('main');
+    const id = new URLSearchParams(location.search).get('id');
+    const se = id && seriesById(id);
+
+    if (!se) {
+      document.body.dataset.page = 'series';
+      main.innerHTML = `<div class="wrap series-index"><h1>Series</h1>
+        <p class="lede" style="margin:12px 0 30px">Stories that carry on from one book to the next. Start with book 1.</p>
+        <div class="series-list">${L.series.map(seriesBand).join('')}</div></div>`;
+      return;
+    }
+
+    document.title = `${se.title} | ${L.site.name}`;
+    const books = inSeries(se.id);
+    const first = books.find((b) => b.status === 'ready');
+    const badge = se.badge ? `<img src="${esc(url(se.badge))}" alt="">` : `<span class="cover-emoji" aria-hidden="true">${esc(se.emoji || '📚')}</span>`;
+    main.innerHTML = `<div class="wrap">
+      <section class="series-hero"><div class="badge">${badge}</div>
+        <div><h1>${esc(se.title)}</h1><p class="lede">${esc(se.blurb)}</p>
+        ${first ? `<a class="btn" href="${esc(url(first.path))}">${openIcon}Start with book ${first.book || 1}</a>` : ''}</div></section>
+      <section class="section" aria-label="Books in this series"><ol class="book-list">${books.map((b) => `
+        <li class="book-row">${cover(b)}
+          <div><p class="num">${b.book ? 'Book ' + b.book : 'Extra story'}</p>
+          <h2>${esc(b.title)}${b.subtitle && b.subtitle !== 'Book ' + b.book ? `<span>${esc(b.subtitle)}</span>` : ''}</h2>
+          ${b.status === 'ready' && b.published ? `<p class="published">${published(b)}</p>` : ''}
+          <p>${esc(b.blurb)}</p>
+          ${b.status === 'ready' ? `<a class="btn" href="${esc(url(b.path))}">${openIcon}Read book ${b.book || ''}</a>` : `<span class="soon-note">Coming soon</span>`}</div></li>`).join('')}
+      </ol></section>
+      <p style="margin-top:36px"><a class="text-link" href="${url('series/')}">See every series</a></p></div>`;
+  }
+
+  header();
+  footer();
+  if (page === 'home') home();
+  if (page === 'stories') stories();
+  if (page === 'series') seriesPage();
+})();
