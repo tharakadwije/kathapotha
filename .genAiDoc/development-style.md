@@ -35,5 +35,12 @@ Testing & verification
 - Manual verification is sufficient: open `index.html` via `file://` and via GitHub Pages after deploy.
 - Check accessibility checklist before merging (see `accessibility.md`).
 
+Cache version (important)
+- Every page links the shared files with a version, e.g. `assets/site.js?v=2026-09-12`.
+- Browsers keep a copy of these files, so WITHOUT a new version a change can stay invisible on the live site. Whenever you change anything in `assets/` (including adding a book to `library.js`), set `?v=` to that day's date in EVERY html file: `404.html`, `index.html`, `series/index.html`, `stories/index.html`, `stories/_template/index.html` and each `stories/<book>/index.html`.
+- The quickest way: search the whole project for `?v=` and replace every date with today's.
+- Note the limit: GitHub Pages also lets browsers keep the html page itself for up to 10 minutes,
+  so a reader may need one refresh (or a 10 minute wait) before the new version reaches them.
+
 Formatting
 - Keep existing style. Run a formatter only on changed files. Avoid mass reformatting unrelated files.
