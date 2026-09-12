@@ -7,7 +7,7 @@ compatibility_date = "2026-09-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "read-aloud-comments"
-database_id = "PASTE_YOUR_DATABASE_ID_HERE"   # printed by: npx wrangler d1 create read-aloud-comments
+database_id = "99b9c143-1ec8-4858-b0e0-7eee14730bcd"   # printed by: npx wrangler d1 create read-aloud-comments
 
 [vars]
 # Sites allowed to post and read comments. Add http://localhost:8080 while testing locally.
