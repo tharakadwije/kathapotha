@@ -26,5 +26,8 @@ Follow every step when a new book goes on the shelf, so nothing is missed.
 - In Chrome, also check over `http://` (e.g. `python -m http.server`), which is how the live site behaves. Chrome offers different voices there. Pressing Read in Chrome should show the "sounds nicest in Microsoft Edge" tip; in Edge it shouldn't.
 - Go through `accessibility.md`.
 
-6) Publish
+6) Cache version
+- Adding a book changes `assets/library.js`, so bump `?v=` to today's date on every asset link in every html file (see `development-style.md`). Skip this and readers keep seeing the old shelf.
+
+7) Publish
 - Branch `feat/<book-id>`, open a PR against `main`, merge. GitHub Pages deploys in a minute or two (see `git-and-deploy.md`).
