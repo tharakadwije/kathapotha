@@ -14,6 +14,7 @@ Follow every step when a new book goes on the shelf, so nothing is missed.
 - If the book was a "coming soon" parcel, update that entry instead of adding a second one.
 
 3) Title page
+- Keep the `comments.js` script line and the `<section id="letters"></section>` after `</main>`, so readers can write to Akie (see `comments.md`).
 - The title page shows "Published …" from `StorySite.publishedLine()`. The template reader does this for you; a custom page like Detective Daisy calls it under the `<h1>`.
 
 4) Copyright
