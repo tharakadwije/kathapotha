@@ -1,2 +1,6 @@
+# Read Aloud Akie — stories are welcome in search results.
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /stories/_template/
+
+Sitemap: https://readaloudakie.com/sitemap.xml
