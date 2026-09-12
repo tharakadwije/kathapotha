@@ -8,7 +8,7 @@ Files:
 - `components.md` — component-level guidance and examples (hero, cover, tile, story page).
 - `accessibility.md` — a short checklist to validate accessibility.
 - `git-and-deploy.md` — GitHub Pages and DNS deployment notes.
-- `comments.md` — "Letters to Akie": how readers write in, and how letters are approved.
+- `comments.md` — "Letters to Akie": the reader-facing panel (the service itself lives in a private repo).
 - `seo.md` — how the site is found in search, and what each new book needs.
 - `new-book-checklist.md` — every step for putting a new book on the shelf (including its published date).
 
