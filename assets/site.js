@@ -107,13 +107,15 @@
   // The copyright notice on the home page, written for children: kind and cheerful, never scary.
   function kindNote() {
     const a = esc(L.site.author);
+    const age = Number(L.site.authorAge) || 0;
     return `<section class="section wrap" aria-labelledby="note-h">
       <div class="kind-note">
         <div class="kind-note-icon" aria-hidden="true">💌</div>
         <div>
           <h2 id="note-h">A little note from ${a}</h2>
-          <p>Every story and every picture on this shelf was made by ${a}, with lots of love (and a few lucky carrots 🥕).</p>
-          <p>You can read them and listen to them right here, as many times as you like!</p>
+          <p class="kind-note-hello">Hi! I’m ${a}${age ? `, and I’m ${age} years old` : ''}. 👋</p>
+          <p>I write every story on this shelf myself, and I draw the pictures too, with lots of love (and a few lucky carrots 🥕).</p>
+          <p>You can read them and listen to them right here, as many times as you like! I’m still learning big words, so if you spot a wobbly one, that’s just me growing. 🌱</p>
           <p>Please don't copy, print, share or use them anywhere else. These stories love living here on the shelf, so they're always waiting for you when you come back. 🏡</p>
           <p class="kind-note-thanks">Thank you for being a kind reader! 💛</p>
           <p class="fine">© ${copyrightYears()} ${a}. All stories and pictures on ${esc(L.site.name)} belong to ${a}.</p>

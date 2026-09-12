@@ -31,6 +31,7 @@ window.LIBRARY = {
   site: {
     name: "Read Aloud Akie",
     author: "Akie",   // use a first name or pen name only
+    authorAge: 8,     // shown in the note on the home page — change it on her birthday
     tagline: "Stories read aloud by Akie — pick a book and enjoy.",
 
     // "Letters to Akie" on story pages. Paste the address of your Cloudflare Worker here,

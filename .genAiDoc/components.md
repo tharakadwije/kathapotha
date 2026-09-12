@@ -39,6 +39,7 @@ This file documents the main UI components and their expected markup/behaviour.
 
 8) Kind note (copyright notice)
 - `kindNote()` in `assets/site.js` adds "A little note from Akie" (`.kind-note`) at the bottom of the home page: stories and pictures belong to Akie; read and listen here as often as you like; please don't copy, print, share or use them anywhere else.
+- It opens in Akie's own voice: "Hi! I’m Akie, and I’m 8 years old", so readers know the stories are written by a child. The age comes from `site.authorAge` in `assets/library.js` — change that one number on her birthday. Never put a birth date anywhere.
 - Tone: written for children. Warm, cheerful and thankful, with a few emoji. No legal words, warnings or threats. The only formal part is the small `.fine` © line.
 - The © years (`copyrightYears()`) run from the first to the latest `published` year and also appear in the footer on every site page.
 
