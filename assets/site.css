@@ -78,10 +78,22 @@ h1, h2, h3 { font-family: var(--display); font-weight: 800; line-height: 1.05; m
 /* ---------- hero + shelf ---------- */
 .hero { width: 100%; margin: 0 auto; padding: clamp(18px, 4vw, 48px) 0 0; display: grid; gap: 18px; }
 .hero h1 { font-size: clamp(3rem, 9vw, 6.6rem); letter-spacing: -.01em; line-height: .92; }
+.wordmark { display: grid; justify-items: center; gap: .12em; }
+.wordmark-top {
+  font-size: clamp(.95rem, 2.4vw, 1.6rem); font-weight: 800; line-height: 1;
+  letter-spacing: .3em; text-indent: .3em; /* keeps the spaced text optically centred */
+  text-transform: uppercase; color: var(--carrot-deep);
+}
+.wordmark-name { position: relative; font-size: clamp(3.4rem, 10vw, 7rem); line-height: .9; letter-spacing: -.015em; }
+.wordmark-name::after {
+  content: ""; display: block; height: .07em; margin: .12em auto 0; width: 78%;
+  border-radius: 999px; background: var(--carrot); opacity: .85;
+}
 
 .hero-card { background: var(--paper); color: var(--ink); border-radius: 18px; padding: clamp(20px, 4vw, 44px); box-shadow: 0 12px 22px -12px rgba(40,22,8,.45); text-align: center; }
 .hero-card .lede { margin: 12px auto 0; }
 .hero .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; }
+.hero-card .actions { justify-content: center; }  /* the card is centred, so the button is too */
 
 .shelf { width: var(--page); margin: clamp(28px, 5vw, 56px) auto 0; }
 .shelf-row {
