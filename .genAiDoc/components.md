@@ -33,6 +33,7 @@ This file documents the main UI components and their expected markup/behaviour.
 
 7) Published date
 - Every ready story has `published: "YYYY-MM-DD"` in `assets/library.js`. The newest published story is featured on the home page.
+- Order: every list of books (home shelf, All stories, "Stories on their own") is in RELEASE ORDER, oldest first, with "coming soon" parcels last — `inOrder` in `assets/site.js`. Never show a newer book before an older one; only the "Newest story" feature uses the newest (`ready[0]`). Series bands stay in book-number order.
 - Shown as "Published 11 September 2026" in a `<time datetime>` element: on tiles, in the home "Newest story" feature, on series page book rows (`published()` in `assets/site.js`), and on the book's title page (`StorySite.publishedLine()` in `assets/story-kit.js`).
 - The date is formatted by hand (not `new Date()`), so it never shifts a day in other time zones. Keep the two copies of the format the same.
 

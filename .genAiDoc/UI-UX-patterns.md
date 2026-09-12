@@ -24,6 +24,7 @@ Hero pattern
 Shelf / Cards
 - Cover cards are tall (aspect 4:5) with strong color fills.
 - Use `cover-link` and `cover` markup; include `cover-num` when a book has `book` number.
+- Books read left to right in release order (book 1 first), the way they would sit on a real shelf. Parcels for unwritten books come after them.
 
 Series & Story pages
 - Series are shown in rounded panels (`series-band`).
