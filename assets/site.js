@@ -39,6 +39,17 @@
   const inOrder = [...ready].reverse().concat(visible.filter((s) => s.status === 'soon'));
   const fullTitle = (s) => s.subtitle ? `${s.title} ${s.subtitle}` : s.title;
 
+  // Hero wordmark: the last word of the site name is the big one, the rest sits small above it,
+  // so "Read Aloud Akie" reads as a title and a name instead of an instruction.
+  function wordmark() {
+    const parts = String(L.site.name || '').trim().split(/\s+/);
+    const name = parts.pop() || '';
+    const above = parts.join(' ');
+    return above
+      ? `<h1 class="wordmark"><span class="wordmark-top">${esc(above)}</span><span class="wordmark-name">${esc(name)}</span></h1>`
+      : `<h1>${esc(name)}</h1>`;
+  }
+
   // "2026-09-11" -> "Published 11 September 2026" (written out by hand so the day never shifts with the time zone).
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   function published(s) {
@@ -143,7 +154,7 @@
     main.innerHTML = `
       <section class="hero">
         <div class="hero-card wrap">
-          <h1>${esc(L.site.name)}</h1>
+          ${wordmark()}
           <p class="lede">${esc(L.site.tagline)}</p>
           ${newest ? `<div class="actions"><a class="btn" href="${esc(url(newest.path))}">${openIcon}Read the newest story</a></div>` : ''}
         </div>
