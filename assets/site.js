@@ -37,7 +37,7 @@
   const ready = newestFirst(visible.filter((s) => s.status === 'ready'));
   // Books are always listed in release order (book 1 first). Only "Newest story" uses ready[0].
   const inOrder = [...ready].reverse().concat(visible.filter((s) => s.status === 'soon'));
-  const fullTitle = (s) => s.subtitle ? `${s.title} ${s.subtitle}` : s.title;
+  const fullTitle = (s) => s.subtitle ? `${s.title}${s.titleSep || " "}${s.subtitle}` : s.title;
 
   // "2026-09-11" -> "Published 11 September 2026" (written out by hand so the day never shifts with the time zone).
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];

@@ -11,6 +11,7 @@
     id        short unique name, lowercase-with-dashes
     title     the book's title
     subtitle  optional second line of the title
+    titleSep  optional: what joins title and subtitle (default a space, e.g. ": ")
     series    optional: the id of a series below
     book      optional: book number inside the series (1, 2, 3...)
     status    "ready" (can be read), "soon" (shows as a wrapped parcel),
@@ -78,6 +79,21 @@ window.LIBRARY = {
       blurb: "Daisy goes camping in Night Owl Woods. When the trees she chops trap her inside, only a kind friend can find her.",
       chapters: 5,
       published: "2026-09-12",
+    },
+    {
+      id: "very-special-surprise",
+      title: "Duckie Mysterys",
+      subtitle: "The Very Special Surprise",
+      titleSep: ": ",   // how title and subtitle join; default is a space
+      series: "detective-daisy",
+      book: 3,
+      status: "ready",
+      path: "stories/detective-daisy-3/",
+      cover: "stories/detective-daisy-3/cover.svg",
+      color: "#b0487a",
+      blurb: "It is Daisy’s birthday and she has forgotten! One by one her friends knock at the door, and every one of them hurries straight into the kitchen.",
+      chapters: 7,
+      published: "2026-09-28",
     },
     {
       id: "new-story",

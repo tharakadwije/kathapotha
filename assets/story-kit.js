@@ -95,7 +95,7 @@
       a.innerHTML = `${shelfIcon}<span>${esc(L.site.name || 'Home')}</span>`;
       document.body.appendChild(a);
     }
-    if (story) document.title = `${story.subtitle ? story.title + ' ' + story.subtitle : story.title} | ${L.site.name}`;
+    if (story) document.title = `${story.subtitle ? story.title + (story.titleSep || ' ') + story.subtitle : story.title} | ${L.site.name}`;
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
   else mount();

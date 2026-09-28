@@ -9,7 +9,8 @@ This file documents the main UI components and their expected markup/behaviour.
 
 2) Cover (book card)
 - Markup produced by `cover()` in `assets/site.js`.
-- Inputs: `title`, `subtitle`, `path`, `cover`, `emoji`, `color`, `book`.
+- Inputs: `title`, `subtitle`, `path`, `cover`, `emoji`, `color`, `book`, optional `titleSep`.
+- `titleSep` says how title and subtitle join when they are written on one line (tiles, aria-labels, the page title): a space by default, ": " for a book like "Duckie Mysterys: The Very Special Surprise".
 - Interaction: link to `path`, show `cover-num` when `book` exists.
 
 3) Tile (list item)
