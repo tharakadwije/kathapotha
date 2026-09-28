@@ -18,6 +18,7 @@ Typography
 
 Hero pattern
 - Centered card with large friendly title (use `hero-card` style).
+- Wordmark: the hero stacks the name — "READ ALOUD" small, spaced and carrot-coloured above a large "Akie", with a short rule under it. Without the stack, "Read Aloud Akie" reads as an instruction rather than a name. Built by `wordmark()` in `assets/site.js` from `site.name` (last word big, the rest above), so the heading text and page titles stay unchanged.
 - Short lede under title (max 2 lines, 36em width).
 - Primary CTA: `Read the newest story` (prominent `.btn`) and secondary restful links as text links.
 
