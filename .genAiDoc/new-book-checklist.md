@@ -6,6 +6,7 @@ Follow every step when a new book goes on the shelf, so nothing is missed.
 - Copy `stories/_template/` to `stories/<book-id>/` (kebab-case, e.g. `detective-daisy-2`).
 - On the `<html>` tag set `data-root="../../"` and `data-story="<id>"`, matching the `id` in `assets/library.js`.
 - Keep `library.js`, `story-kit.js` and `read-aloud.js` in the `<head>`. Pictures go in the book's own folder.
+- `cover.svg` (the picture on the shelf card) is the page's own `scenes.cover()` drawing saved as a file: paste the `<defs>` from `DEFS` just inside the opening `<svg>` tag, change `preserveAspectRatio` to `xMidYMid meet`, and drop repeated attributes on a tag (browsers keep the first one; a real XML parser refuses the file).
 - Links back to the site go through `StorySite.url()` / `StorySite.home`. Never hard-code `href="../../"`.
 
 2) Library entry (`assets/library.js`)
